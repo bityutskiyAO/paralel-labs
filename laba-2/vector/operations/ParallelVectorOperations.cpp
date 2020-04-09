@@ -63,14 +63,18 @@ double ParallelVectorOperations::getVectorLength(std::vector<int64_t> &b) {
     return result;
 }
 
-std::vector<int64_t> ParallelVectorOperations::vectorMultiplication(std::vector<int64_t> &a, std::vector<int64_t> &b) {
-    return std::vector<int64_t>();
-}
-
 int64_t ParallelVectorOperations::getSize() {
     return size;
 }
 
 bool ParallelVectorOperations::checkVector(std::vector<int64_t> &a) {
     return a.size() == getSize();
+}
+
+std::ostream& operator << (std::ostream &os, std::vector<int64_t> &a) {
+    for (int i = 0; i < a.size(); ++i) {
+        os << a[i] << " ";
+    }
+    os << endl;
+    return os;
 }

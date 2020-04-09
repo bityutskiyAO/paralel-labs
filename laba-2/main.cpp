@@ -10,12 +10,13 @@ int main() {
     ParallelMatrixOperations operations(2);
     vector<vector<int64_t>> matrix = {{1, 4}, {2, 3}};
     vector<vector<int64_t>> result = operations.transpositionMatrix(matrix);
-    for (int i = 0; i < result.size(); ++i) {
-        for (int j = 0; j < result[0].size(); ++j) {
-            cout << result[i][j] << " ";
-        }
-        cout << endl;
-    }
+    cout << result;
+//    for (int i = 0; i < result.size(); ++i) {
+//        for (int j = 0; j < result[0].size(); ++j) {
+//            cout << result[i][j] << " ";
+//        }
+//        cout << endl;
+//    }
 
 //    cout << "Введите длину вектора: " << endl;
 //    cin >> size;

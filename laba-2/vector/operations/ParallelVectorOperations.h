@@ -22,8 +22,8 @@ class ParallelVectorOperations {
     int64_t vectorScalarMult(std::vector<int64_t>& a, std::vector<int64_t>& b);
     std::vector<int64_t> vectorConstantMult(int64_t scalar, std::vector<int64_t>& b);
     double getVectorLength(std::vector<int64_t>& b);
-    std::vector<int64_t> vectorMultiplication(std::vector<int64_t>& a, std::vector<int64_t>& b);
 };
+
 
 
 #endif //LAB2_PARALLELVECTOROPERATIONS_H
