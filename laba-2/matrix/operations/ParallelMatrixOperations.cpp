@@ -65,8 +65,8 @@ std::vector<std::vector<int64_t>> ParallelMatrixOperations::multMatrix(std::vect
     if(checkMatrixMultiplyAvailable(a, b)) {
         #pragma omp parallel for
         for (int64_t i = 0; i < a.size(); ++i) {
+            #pragma omp parallel for
             for (int64_t j = 0; j < b[0].size(); ++j) {
-                #pragma omp parallel for reduction(+:resultMatrix[i][j])
                 for (int64_t k = 0; k < b.size(); ++k) {
                     resultMatrix[i][j] += a[i][k] * b[k][j];
                 }

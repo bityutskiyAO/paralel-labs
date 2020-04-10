@@ -8,19 +8,49 @@ using namespace std;
 int main() {
     int64_t size(2);
     ParallelMatrixOperations matrixOperations(size);
+    ParallelVectorOperations vectorOperations(size);
     vector<vector<int64_t>> matrix1 = {{1, 4}, {2, 3}};
     vector<vector<int64_t>> matrix2 = {{1, 4}, {2, 3}};
+    vector<int64_t> vec1 = {2, 4};
+    vector<int64_t> vec2 = {4, 2};
+
     vector<vector<int64_t>> resultMatrix = matrixOperations.transpositionMatrix(matrix1);
-    vector<vector<int64_t>> resultMatrix2 = matrixOperations.sumMatrix(matrix1, matrix2);
-    matrixOperations.printMatrix(resultMatrix2);
-
-    /* ------------------------------------------------------------------*/
-//    vector<int64_t> vec1 = {2, 4, 3, 2, 2};
-//    vector<int64_t> vec2 = {8, 6, 1, 1, 1};
-//    ParallelVectorOperations vectorOperations(size);
-//    vector<int64_t> resultVector = vectorOperations.vectorSum(vec1, vec2);
-//    vectorOperations.printVector(resultVector);
-
+    cout << "Транпонировании матрицы" << endl;
+    matrixOperations.printMatrix(resultMatrix);
+    resultMatrix = matrixOperations.sumMatrix(matrix1, matrix2);
+    cout << "Сложение матриц" << endl;
+    matrixOperations.printMatrix(resultMatrix);
+    resultMatrix = matrixOperations.subMatrix(matrix1, matrix2);
+    cout << "Вычитание матриц" << endl;
+    matrixOperations.printMatrix(resultMatrix);
+    resultMatrix = matrixOperations.multMatrix(matrix1, matrix2);
+    cout << "Перемножение матриц" << endl;
+    matrixOperations.printMatrix(resultMatrix);
+    vector<int64_t> resultVector = matrixOperations.multMatrixVector(matrix1, vec1);
+    cout << "Умножение матрицы на вектор" << endl;
+    vectorOperations.printVector(resultVector);
+    int64_t result = matrixOperations.frobeniusNorm(matrix1);
+    cout << "Метрика Фробениуса" << endl;
+    cout << result << endl;
+    resultMatrix = matrixOperations.scalarMultMatrix(5, matrix2);
+    cout << "Умножение на скаляр" << endl;
+    matrixOperations.printMatrix(resultMatrix);
+    cout << endl;
+    vector<int64_t> resultVector2 = vectorOperations.vectorSum(vec1, vec2);
+    cout << "Сложение векторов" << endl;
+    vectorOperations.printVector(resultVector2);
+    resultVector2= vectorOperations.vectorSub(vec1, vec2);
+    cout << "Разность векторов" << endl;
+    vectorOperations.printVector(resultVector2);
+    int64_t result2 = vectorOperations.vectorScalarMult(vec1, vec2);
+    cout << "Скалярное произведение" << endl;
+    cout << result2 << endl;
+    double result3 = vectorOperations.getVectorLength(vec1);
+    cout << "Длина вектора" << endl;
+    cout << result3 << endl;
+    resultVector2 = vectorOperations.vectorConstantMult(5, vec2);
+    cout << "Умножение на скаляр" << endl;
+    vectorOperations.printVector(resultVector2);
 
 //    cout << "Введите длину вектора: " << endl;
 //    cin >> size;
