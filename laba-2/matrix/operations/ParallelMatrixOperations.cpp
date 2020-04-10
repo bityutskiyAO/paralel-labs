@@ -3,11 +3,14 @@
 //
 
 #include "ParallelMatrixOperations.h"
+#include <omp.h>
 
 std::vector<std::vector<int64_t>> ParallelMatrixOperations::transpositionMatrix(std::vector<std::vector<int64_t>> &a) {
-    std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(a.size()));
-    for (int64_t i = 0; i < resultMatrix.size(); ++i) {
-        for (int64_t j = 0; j < resultMatrix[0].size(); ++j) {
+    std::vector<std::vector<int64_t>> resultMatrix(a[0].size(), std::vector<int64_t>(a.size()));
+    #pragma omp parallel for
+    for (int64_t i = 0; i < a.size(); ++i) {
+        #pragma omp parallel for
+        for (int64_t j = 0; j < a[0].size(); ++j) {
             resultMatrix[j][i] = a[i][j];
         }
     }
@@ -16,9 +19,11 @@ std::vector<std::vector<int64_t>> ParallelMatrixOperations::transpositionMatrix(
 
 std::vector<std::vector<int64_t>>
 ParallelMatrixOperations::sumMatrix(std::vector<std::vector<int64_t>> &a, std::vector<std::vector<int64_t>> &b) {
-    std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(a.size()));
+    std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(a[0].size()));
     if(checkMatrix(a) && checkMatrix(b)) {
+        #pragma omp parallel for num_threads(resultMatrix.size())
         for (int64_t i = 0; i < resultMatrix.size(); ++i) {
+            #pragma omp parallel for num_threads(resultMatrix[0].size())
             for (int64_t j = 0; j < resultMatrix[0].size(); ++j) {
                 resultMatrix[i][j] = a[i][j] + b[i][j];
             }
@@ -28,9 +33,11 @@ ParallelMatrixOperations::sumMatrix(std::vector<std::vector<int64_t>> &a, std::v
 }
 
 std::vector<std::vector<int64_t>> ParallelMatrixOperations::subMatrix(std::vector<std::vector<int64_t>> &a, std::vector<std::vector<int64_t>> &b) {
-    std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(a.size()));
+    std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(a[0].size()));
     if(checkMatrix(a) && checkMatrix(b)) {
+        #pragma omp parallel for num_threads(resultMatrix.size())
         for (int64_t i = 0; i < resultMatrix.size(); ++i) {
+            #pragma omp parallel for num_threads(resultMatrix[0].size())
             for (int64_t j = 0; j < resultMatrix[0].size(); ++j) {
                 resultMatrix[i][j] = a[i][j] - b[i][j];
             }
@@ -42,7 +49,9 @@ std::vector<std::vector<int64_t>> ParallelMatrixOperations::subMatrix(std::vecto
 std::vector<std::vector<int64_t>> ParallelMatrixOperations::scalarMultMatrix(int64_t scalar, std::vector<std::vector<int64_t>> &a) {
     std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(a.size()));
     if(checkMatrix(a)) {
+        #pragma omp parallel for num_threads(resultMatrix.size())
         for (int64_t i = 0; i < resultMatrix.size(); ++i) {
+            #pragma omp parallel for num_threads(resultMatrix[0].size())
             for (int64_t j = 0; j < resultMatrix[0].size(); ++j) {
                 resultMatrix[i][j] = scalar * a[i][j];
             }
@@ -54,8 +63,10 @@ std::vector<std::vector<int64_t>> ParallelMatrixOperations::scalarMultMatrix(int
 std::vector<std::vector<int64_t>> ParallelMatrixOperations::multMatrix(std::vector<std::vector<int64_t>> &a, std::vector<std::vector<int64_t>> &b) {
     std::vector<std::vector<int64_t>> resultMatrix(a.size(), std::vector<int64_t>(b[0].size()));
     if(checkMatrixMultiplyAvailable(a, b)) {
+        #pragma omp parallel for
         for (int64_t i = 0; i < a.size(); ++i) {
             for (int64_t j = 0; j < b[0].size(); ++j) {
+                #pragma omp parallel for reduction(+:resultMatrix[i][j])
                 for (int64_t k = 0; k < b.size(); ++k) {
                     resultMatrix[i][j] += a[i][k] * b[k][j];
                 }
@@ -68,7 +79,9 @@ std::vector<std::vector<int64_t>> ParallelMatrixOperations::multMatrix(std::vect
 std::vector<int64_t> ParallelMatrixOperations::multMatrixVector(std::vector<std::vector<int64_t>> &a, std::vector<int64_t> &b) {
     std::vector <int64_t> resultVector(a.size());
     if(checkVectorMultiplyAvailable(a, b)) {
+        #pragma omp parallel for
         for (int64_t i = 0; i < a.size(); ++i) {
+            #pragma omp parallel for reduction(+:resultVector[i])
             for (int64_t j = 0; j < a[i].size(); ++j) {
                 resultVector[i] += a[i][j] * b[j];
             }
@@ -77,9 +90,11 @@ std::vector<int64_t> ParallelMatrixOperations::multMatrixVector(std::vector<std:
     return resultVector;
 }
 
-int64_t ParallelMatrixOperations::frobeniusNorm(std::vector<int64_t> &a) {
-    int64_t result(0)
+int64_t ParallelMatrixOperations::frobeniusNorm(std::vector<std::vector<int64_t>> &a) {
+    int64_t result(0);
+    #pragma omp parallel for reduction(+:result)
     for (int i = 0; i < a.size(); ++i) {
+        #pragma omp parallel for reduction(+:result)
         for (int j = 0; j < a[i].size(); ++j) {
             result+=pow(a[i][j], 2);
         }
@@ -111,13 +126,12 @@ ParallelMatrixOperations::~ParallelMatrixOperations() {
 
 }
 
-std::ostream& operator << (std::ostream &os, std::vector<std::vector<int64_t>> &a) {
+void ParallelMatrixOperations::printMatrix(std::vector<std::vector<int64_t>> &a) {
     for (int i = 0; i < a.size(); ++i) {
         for (int j = 0; j < a[i].size(); ++j) {
-            os << a[i][j] << " ";
+            std::cout << a[i][j] << " ";
         }
-        os << endl;
+        std::cout << std::endl;
     }
-    os << endl;
-    return os;
+    std::cout << std::endl;
 }

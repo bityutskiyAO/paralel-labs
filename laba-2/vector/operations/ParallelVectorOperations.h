@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 #include <algorithm>
 
 class ParallelVectorOperations {
@@ -22,7 +23,15 @@ class ParallelVectorOperations {
     int64_t vectorScalarMult(std::vector<int64_t>& a, std::vector<int64_t>& b);
     std::vector<int64_t> vectorConstantMult(int64_t scalar, std::vector<int64_t>& b);
     double getVectorLength(std::vector<int64_t>& b);
+    void printVector(std::vector<int64_t> &a);
 };
+//std::ostream& operator << (std::ostream &os,const std::vector<int64_t> &a) {
+//    for (int i = 0; i < a.size(); ++i) {
+//        os << a[i] << " ";
+//    }
+//    os << std::endl;
+//    return os;
+//}
 
 
 

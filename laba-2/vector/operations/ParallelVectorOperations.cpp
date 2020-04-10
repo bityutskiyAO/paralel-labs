@@ -4,6 +4,10 @@
 
 #include "ParallelVectorOperations.h"
 
+#include <vector>
+#include <cmath>
+#include <omp.h>
+
 ParallelVectorOperations::ParallelVectorOperations(int64_t size): size(size) {
 
 }
@@ -15,6 +19,7 @@ ParallelVectorOperations::~ParallelVectorOperations() {
 std::vector<int64_t> ParallelVectorOperations::vectorSum(std::vector<int64_t> &a, std::vector<int64_t> &b) {
     std::vector<int64_t> resultVector(getSize(), 0);
     if(checkVector(a) && checkVector(b)) {
+        #pragma omp parallel for
         for (int i = 0; i < resultVector.size(); ++i) {
             resultVector[i] = a[i] + b[i];
         }
@@ -25,6 +30,7 @@ std::vector<int64_t> ParallelVectorOperations::vectorSum(std::vector<int64_t> &a
 std::vector<int64_t> ParallelVectorOperations::vectorSub(std::vector<int64_t> &a, std::vector<int64_t> &b) {
     std::vector<int64_t> resultVector(getSize(), 0);
     if(checkVector(a) && checkVector(b)) {
+        #pragma omp parallel for
         for (int i = 0; i < resultVector.size(); ++i) {
             resultVector[i] = a[i] - b[i];
         }
@@ -35,6 +41,7 @@ std::vector<int64_t> ParallelVectorOperations::vectorSub(std::vector<int64_t> &a
 int64_t ParallelVectorOperations::vectorScalarMult(std::vector<int64_t> &a, std::vector<int64_t> &b) {
     int64_t result(0);
     if(checkVector(a) && checkVector(b)) {
+        #pragma omp parallel for reduction(+:result)
         for (int i = 0; i < getSize(); ++i) {
             result += a[i] * b[i];
         }
@@ -45,6 +52,7 @@ int64_t ParallelVectorOperations::vectorScalarMult(std::vector<int64_t> &a, std:
 std::vector<int64_t> ParallelVectorOperations::vectorConstantMult(int64_t scalar, std::vector<int64_t> &b) {
     std::vector<int64_t> resultVector(getSize(), 0);
     if(checkVector(b)) {
+#pragma omp parallel for
         for (int i = 0; i < resultVector.size(); ++i) {
             resultVector[i] = scalar * b[i];
         }
@@ -55,6 +63,7 @@ std::vector<int64_t> ParallelVectorOperations::vectorConstantMult(int64_t scalar
 double ParallelVectorOperations::getVectorLength(std::vector<int64_t> &b) {
     double result(0);
     if(checkVector(b)) {
+#pragma omp parallel for reduction(+:result)
         for (int i = 0; i < b.size(); ++i) {
             result += pow(b[i],2);
         }
@@ -71,10 +80,10 @@ bool ParallelVectorOperations::checkVector(std::vector<int64_t> &a) {
     return a.size() == getSize();
 }
 
-std::ostream& operator << (std::ostream &os, std::vector<int64_t> &a) {
-    for (int i = 0; i < a.size(); ++i) {
-        os << a[i] << " ";
+void ParallelVectorOperations::printVector(std::vector<int64_t> &a) {
+    std::cout << "[";
+    for (long long i : a) {
+        std::cout << i << " ";
     }
-    os << endl;
-    return os;
+    std::cout << "]" << std::endl;
 }
