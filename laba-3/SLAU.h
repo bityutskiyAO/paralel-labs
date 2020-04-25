@@ -22,6 +22,9 @@ public:
     vector<double> gaus(int n);
     vector<double> yakobiGaus(int n, vector<double> x);
     vector<double> zeidel(int n, vector<double> x, double w);
+    vector<double> parallelGaus(int n);
+    vector<double> parallelyakobiGaus(int n, vector<double> x);
+    vector<double> parallelZeidel(int n, vector<double> x, double w);
 };
 
 
