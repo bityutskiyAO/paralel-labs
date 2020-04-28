@@ -21,20 +21,20 @@ vector<double> SLAU::gaus(int n) {
     int k, index;
     const double eps = 0.00001;  // точность
     k = 0;
-    max = abs(matrix[k][k]);
-    index = k;
-    for (int i = k + 1; i < n; ++i) {
-        if(abs(matrix[i][k]) > max) {
-            max = abs(matrix[i][k]);
-            index = i;
-        }
-    }
-    if (max < eps){
-        cout << "Решение получить невозможно из-за нулевого столбца ";
-        cout << index << " матрицы A" << endl;
-        return vector<double>(0);
-    }
     while(k < n){
+        max = abs(matrix[k][k]);
+        index = k;
+        for (int i = k + 1; i < n; ++i) {
+            if(abs(matrix[i][k]) > max) {
+                max = abs(matrix[i][k]);
+                index = i;
+            }
+        }
+        if (max < eps){
+            cout << "Решение получить невозможно из-за нулевого столбца ";
+            cout << index << " матрицы A" << endl;
+            return vector<double>(0);
+        }
         //переставляем k строчку матрицы А со строчкой с наибольшим элементом
         for (int j = 0; j < n; j++)
         {
@@ -105,7 +105,7 @@ vector<double> SLAU::zeidel(int n, vector<double> x, double w) {
         }
         counter +=1;
     } while (norm > eps);
-    cout << "Zeidel method iteration count: " << counter << endl;
+//    cout << "Zeidel method iteration count: " << counter << endl;
     return x;
 }
 
@@ -150,7 +150,7 @@ vector<double> SLAU::yakobiGaus (int n, vector<double> x)
             }
             counter += 1;
         } while (norm > eps);
-        cout << "Yakobi method iteration count: " << counter << endl;
+//        cout << "Yakobi method iteration count: " << counter << endl;
         return x;
     } else {
         cout << "Не выполнено необходимое условие" << endl;
@@ -244,6 +244,7 @@ vector<double> SLAU::parallelyakobiGaus(int n, vector<double> x) {
     double norm(0); // норма, определяемая как наибольшая разность компонент столбца иксов соседних итераций.
     int counter(0);// количество иттераций
     double max(0);
+    #pragma omp parallel for
     for (int k = 0; k < n; ++k) {
         double test(0);
         #pragma omp parallel for reduction(+:test)
@@ -262,16 +263,18 @@ vector<double> SLAU::parallelyakobiGaus(int n, vector<double> x) {
             for (int i = 0; i < n; i++) {
                 tempX[i] = f[i];
                 double tmp = tempX[i];
-#pragma omp parallel for reduction(-:tmp)
+                #pragma omp parallel for reduction(-:tmp)
                 for (int j = 0; j < n; j++) {
                     if (i != j)
                         tmp -= A[i][j] * x[j];
                 }
                 if (A[i][i] != 0) {
-                    tempX[i] /= A[i][i];
+                    tmp /= A[i][i];
                 }
+                tempX[i] = tmp;
             }
             norm = fabs(x[0] - tempX[0]);
+            #pragma omp parallel for
             for (int h = 0; h < n; h++) {
                 if (fabs(x[h] - tempX[h]) > norm)
                     norm = fabs(x[h] - tempX[h]);
@@ -279,7 +282,7 @@ vector<double> SLAU::parallelyakobiGaus(int n, vector<double> x) {
             }
             counter += 1;
         } while (norm > eps);
-        cout << "Yakobi method iteration count: " << counter << endl;
+//        cout << "Yakobi method iteration count: " << counter << endl;
         return x;
     } else {
         cout << "Не выполнено необходимое условие" << endl;
@@ -318,6 +321,6 @@ vector<double> SLAU::parallelZeidel(int n, vector<double> x, double w) {
         }
         counter +=1;
     } while (norm > eps);
-    cout << "Zeidel method iteration count: " << counter << endl;
+//    cout << "Zeidel method iteration count: " << counter << endl;
     return x;
 }
