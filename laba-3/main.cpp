@@ -74,7 +74,7 @@ int main() {
         double time2 = omp_get_wtime();
         allTime += time2 - time1;
     }
-    cout << "Straight time of 1000 iteration: " << allTime/1000 << endl;
+    cout << "Straight time of 1000 iteration: " << allTime << endl;
 //    for (int i = 0; i < test3.size(); ++i) {
 //        cout << "x[" << i << "] = " << test3[i]<< endl;
 //    }
@@ -96,6 +96,6 @@ int main() {
     double timeparalell2 = omp_get_wtime();
     allTimeParal += timeparalell2 - timeparallel1;
 //   }
-    cout << "Parallel time of 1000 iteration: " << allTimeParal/1000 << endl;
+    cout << "Parallel time of 1000 iteration: " << allTimeParal << endl;
     return 0;
 }
