@@ -299,8 +299,10 @@ vector<double> SLAU::parallelZeidel(int n, vector<double> x, double w) {
     double norm(0);
     int counter(0);// количество иттераций
     do {
+        #pragma omp parallel for
         for (int i = 0; i < n; ++i) {
             tempX[i] = f[i];
+            #pragma omp parallel for ordered
             for (int j = 0; j < n; j++) {
                 if (j < i) {
                     tempX[i] -= A[i][j]*tempX[j];
