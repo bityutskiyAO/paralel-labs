@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <thread>
+#include <ctime>
+#include <cstdio>
 #include <cmath>
 #include <iostream>
 #include <algorithm>
@@ -15,6 +17,7 @@ class ThreadSaveVector {
     private:
         std::vector<int> safetyVector;
         std::mutex locker;
+
     public:
         explicit ThreadSaveVector();
         void savePushBack (int value);
@@ -25,6 +28,11 @@ class ThreadSaveVector {
         std::thread getElementThread(int index);
         void printVector();
         std::vector<int> getVector();
+
+        std::vector<double> pushingTime;
+        std::vector<double> popingTime;
+        std::vector<double> getElementTime;
+        int threadCount;
 };
 
 
